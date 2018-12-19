@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--引入外部文件 使用占位符配置-->
+    <bean id="placeholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <value>classpath*:settings.properties</value>
+        </property>
+
+    </bean>
+
+
+    <bean class="com.alibaba.druid.pool.DruidDataSource" id="dataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="username" value="${db.username}" />
+        <property name="password" value="${db.password}" />
+        <property name="url" value="${db.url}"/>
+        <property name="initialSize" value="3"/>
+        <property name="minIdle" value="3"/>
+        <property name="maxActive" value="20"/>
+        <property name="maxWait" value="6000"/>
+        <property name="filters" value="stat,wall"/>
+    </bean>
+
+
+    <!--mybatis 配置-->
+    <bean id="sessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean" >
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis-configura.xml"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sessionFactoryBean"/>
+        <property name="basePackage" value="com.youjian.dao"/>
+    </bean>
+
+    <!--事物管理-->
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--启用事务注解-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!--druid 监控配置-->
+    <bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
+        <!--设置 sql 执行3秒就为慢SQL-->
+        <property name="slowSqlMillis" value="3000"/>
+        <!--设置慢sql已日志的形式记录-->
+        <property name="logSlowSql" value="true"/>
+        <!--设置多行sql合并成一起-->
+        <property name="mergeSql" value="true"/>
+    </bean>
+
+    <bean id="wall-filter" class="com.alibaba.druid.wall.WallFilter">
+        <property name="dbType" value="mysql"/>
+    </bean>
+
+</beans>
