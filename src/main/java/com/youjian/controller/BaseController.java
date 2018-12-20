@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @date 2018/12/2 21:13
  */
 @Controller
-@RequestMapping("test")
 @Slf4j
 public class BaseController {
     @RequestMapping("hello.json")
@@ -23,4 +22,5 @@ public class BaseController {
 //        return BaseResponse.success("permission success");
         throw new PermissionException("test exception");
     }
+
 }

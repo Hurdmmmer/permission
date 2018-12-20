@@ -2,8 +2,6 @@ package com.youjian.response;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.ibatis.executor.ReuseExecutor;
-import org.mybatis.spring.mapper.MapperScannerConfigurer;
 
 import java.util.HashMap;
 import java.util.Map;
